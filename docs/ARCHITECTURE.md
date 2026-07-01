@@ -1,34 +1,44 @@
-# Multi-Agent Framework Architecture
+# AI Operating System: Multi-Agent Personal Assistant
 
-## 1. Background Update System (Ops & Code)
-**Goal:** A robust script to maintain system packages on Ubuntu 24.04.
-- **Language:** Bash
-- **Components:**
-    - `scripts/update_manager.sh`: A unified script for checking and applying updates.
-- **Implementation Details:**
-    - Uses `apt-get` for stable scripting output.
-    - Employs `export DEBIAN_FRONTEND=noninteractive` to avoid prompts.
-    - Command: `sudo -E apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade`.
-    - Logs all output to `logs/system_updates.log`.
-- **Safety Measures:**
-    - Lock file checking to prevent concurrent `apt` instances.
-    - Pre-flight disk space check using `df`.
+## 1. System Vision
+The system functions as a modular, extensible AI Operating System where specialized agents collaborate like an elite consulting firm. It emphasizes human-like reasoning, collaboration, and high-quality deliverables.
 
-## 2. Web-Search Q&A Framework (Researcher & Architect)
-**Goal:** Synthesize information from the web to answer complex queries using a ReAct-style agent.
-- **Language:** Python
-- **Components:**
-    - `qa_engine/search_agent.py`: Orchestrator for search and synthesis.
-- **Pipeline:**
-    1. **Decomposition:** Break query into atomic search terms.
-    2. **Retrieval:** Execute `google_search` calls.
-    3. **Deep Dive:** Use `view_text_website` on high-relevance URLs to pull full content.
-    4. **Synthesis:** LLM-based aggregation of facts, citing sources.
-    5. **Validation:** Cross-reference facts between different sources for consistency.
-- **Storage:** Research logs and cached results stored in `qa_engine/cache/`.
+## 2. Core Agent Roles
 
-## 3. Multi-Agent Governance
-- **Architect:** Defines system requirements and SOPs.
-- **Researcher:** Gathers external knowledge and validates best practices.
-- **Developer:** Implements and tests code according to Architect's specs.
-- **Ops:** Monitors execution, handles system-level permissions, and manages logging.
+### Management & Strategy
+- **Executive Agent (CEO):** Coordinates all agents, makes final decisions, and manages task prioritization.
+- **Planner Agent:** Decomposes complex objectives into actionable tasks and schedules execution.
+- **Memory Agent:** Maintains long-term context, user preferences, and project history using semantic search and versioning.
+
+### Technical & Engineering
+- **Solution Architect:** Designs enterprise-grade architectures, generates diagrams, and analyzes trade-offs.
+- **Software Engineer:** Writes high-quality code across multiple languages (Python, Go, Rust, JS, etc.) and performs refactoring.
+- **DevOps & Infrastructure:** Manages CI/CD pipelines, IaC (Terraform, Ansible), and container orchestration (K8s, Docker).
+- **Security Agent:** Performs threat modeling, security reviews (OWASP), and compliance checks.
+
+### Research & Operations
+- **Research Agent:** Performs multi-source web retrieval (GitHub, Papers, Docs) with conflict detection and citation synthesis.
+- **Computer Operator:** Executes local system commands, manages files, monitors hardware telemetry (CPU/RAM), and automates browser tasks.
+- **FinOps Agent:** Optimizes cloud costs and provides budget forecasting.
+
+### Quality & Communication
+- **QA & Reviewer Agents:** Validate outputs, detect bugs, and perform peer reviews to ensure consistency and correctness.
+- **Documentation Agent:** Produces polished professional documents (RFCs, SOPs, Whitepapers, Presentations).
+- **Communication Agent:** Tailors technical explanations for different stakeholders (Execs vs. Developers).
+
+## 3. Collaboration Workflow (Reasoning Pipeline)
+Instead of immediate answers, the system follows a collaborative "Architecture Review" style process:
+
+1. **Objective Analysis:** Executive agent identifies the goal and asks clarifying questions.
+2. **Decomposition:** Planner breaks the goal into sub-tasks.
+3. **Execution:** Specialized agents execute tasks in parallel.
+4. **Peer Review:** Reviewer agents challenge assumptions and find inconsistencies.
+5. **Conflict Resolution:** Agents debate alternatives and resolve trade-offs.
+6. **Reflection:** System self-evaluates the final output against constraints.
+7. **Synthesis:** Executive agent compiles the final executive report with confidence scores.
+
+## 4. Technical Foundations
+- **Orchestration:** Micro-kernel style orchestrator with plugin support for new agents.
+- **Memory System:** Vector-based long-term storage and knowledge graphs.
+- **Tooling:** Integrated support for MCP (Model Context Protocol), local CLI execution, and web automation.
+- **UI:** Interactive, voice-enabled interface with transparency into agent "debates".

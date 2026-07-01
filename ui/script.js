@@ -69,10 +69,10 @@ async function handleResponse(message) {
         // Simple routing logic based on keywords
         if (message.toLowerCase().includes("system update") || message.toLowerCase().includes("check for updates")) {
             taskType = "ops_update";
-            payload = { action: "check" };
+            payload = { action: "check", goal: message };
         } else if (message.toLowerCase().includes("apply updates")) {
             taskType = "ops_update";
-            payload = { action: "apply" };
+            payload = { action: "apply", goal: message };
         }
 
         const response = await fetch('/api/task', {
@@ -82,13 +82,26 @@ async function handleResponse(message) {
         });
 
         const data = await response.json();
-        let responseText = "";
+        let responseText = data.final_report || "Task completed.";
 
-        if (taskType === "research") {
-            responseText = data; // Research agent returns a string or summary
-        } else if (taskType === "ops_update") {
-            responseText = `System Status: ${data.status}. Output: ${data.output.split('\n').pop()}`;
+        // Display Multi-Agent Discussion/Debate
+        const debateBox = document.createElement('div');
+        debateBox.className = 'debate-log';
+        debateBox.innerHTML = "<strong>Multi-Agent Discussion:</strong><br>";
+
+        if (data.plan) {
+            debateBox.innerHTML += `<small><i>Planner: Decomposed into ${data.plan.length} steps.</i></small><br>`;
         }
+
+        data.results.forEach(res => {
+            let detail = "";
+            if (res.agent === 'ops' && res.security_audit) {
+                detail = ` | Security: ${res.security_audit[0]}`;
+            }
+            debateBox.innerHTML += `<small><i>${res.agent}: Processed successfully.${detail}</i></small><br>`;
+        });
+
+        chatDisplay.appendChild(debateBox);
 
         const assistantMsg = document.createElement('p');
         assistantMsg.innerHTML = `<strong>Assistant:</strong> ${responseText}`;

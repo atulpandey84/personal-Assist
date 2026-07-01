@@ -41,7 +41,7 @@ body {
 }
 
 .chat-display {
-    height: 150px;
+    height: 300px;
     overflow-y: auto;
     background: #fffafa;
     border: 1px solid #f8e8e8;
@@ -90,6 +90,16 @@ button {
 .mic-active {
     background-color: #ffc0cb !important; /* Pink */
     animation: pulse 1.5s infinite;
+}
+
+.debate-log {
+    background: #f0f4f8;
+    border-left: 4px solid #d4a5a5;
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #555;
 }
 
 @keyframes pulse {

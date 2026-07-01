@@ -1,22 +1,75 @@
 import subprocess
 import json
 import os
+import time
 from qa_engine.search_agent import SearchAgent
+from scripts.ops_tools import ComputerOperator, SecurityAgent
+
+class Agent:
+    def __init__(self, name, role):
+        self.name = name
+        self.role = role
+
+class ExecutiveAgent(Agent):
+    def __init__(self):
+        super().__init__("Executive", "CEO / Orchestrator")
+
+    def collaborate(self, goal, agents_responses):
+        print(f"[{self.name}] Synthesizing multi-agent feedback for: {goal}")
+        # Logic to compile final report
+        return f"Final Executive Summary for '{goal}' based on {len(agents_responses)} agent reports."
+
+class PlannerAgent(Agent):
+    def __init__(self):
+        super().__init__("Planner", "Task Decomposition")
+
+    def decompose(self, goal):
+        print(f"[{self.name}] Decomposing goal: {goal}")
+        # Logic to return list of tasks
+        if not goal:
+            return []
+        if "update" in goal.lower():
+            return [{"agent": "ops", "task": "system_check"}, {"agent": "ops", "task": "apply_update"}]
+        return [{"agent": "researcher", "task": "web_search", "query": goal}]
 
 class Orchestrator:
     def __init__(self):
+        self.executive = ExecutiveAgent()
+        self.planner = PlannerAgent()
         self.researcher = SearchAgent()
+        self.operator = ComputerOperator()
+        self.security = SecurityAgent()
 
     def handle_task(self, task_type, payload):
-        """
-        Routes the task to the appropriate internal agent.
-        """
-        if task_type == "research":
-            return self.researcher.research(payload.get("query"))
-        elif task_type == "ops_update":
-            return self.run_ops_update(payload.get("action", "check"))
-        else:
-            return {"error": "Unknown task type"}
+        goal = payload.get("query") or payload.get("goal")
+
+        # 1. Planning Phase
+        plan = self.planner.decompose(goal)
+
+        # 2. Execution Phase (Simulated Parallelism)
+        results = []
+        for step in plan:
+            agent_type = step["agent"]
+            if agent_type == "researcher":
+                res = self.researcher.research(step.get("query"))
+                results.append({"agent": "researcher", "output": res})
+            elif agent_type == "ops":
+                # Security Audit before execution
+                audit = self.security.audit_script("scripts/update_manager.sh")
+                res = self.run_ops_update(payload.get("action", "check"))
+                results.append({"agent": "ops", "output": res, "security_audit": audit})
+            elif agent_type == "telemetry":
+                res = self.operator.get_system_telemetry()
+                results.append({"agent": "operator", "output": res})
+
+        # 3. Review & Synthesis Phase
+        final_output = self.executive.collaborate(goal, results)
+
+        return {
+            "plan": plan,
+            "results": results,
+            "final_report": final_output
+        }
 
     def run_ops_update(self, action):
         try:
@@ -27,13 +80,11 @@ class Orchestrator:
             result = subprocess.run(cmd, capture_output=True, text=True)
             return {
                 "status": "success" if result.returncode == 0 else "error",
-                "output": result.stdout,
-                "error": result.stderr
+                "output": result.stdout
             }
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
 if __name__ == "__main__":
-    # CLI interaction for testing
-    orchestrator = Orchestrator()
-    print("Orchestrator ready. (CLI Mode)")
+    orch = Orchestrator()
+    print("Orchestrator (AI OS) Initialized.")
