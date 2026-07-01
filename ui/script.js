@@ -52,7 +52,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 }
 
 // --- Interaction Logic ---
-function handleResponse(message) {
+async function handleResponse(message) {
     if (!message) return;
 
     const userMsg = document.createElement('p');
@@ -62,9 +62,33 @@ function handleResponse(message) {
 
     statusIndicator.innerText = "Thinking...";
 
-    // Simulate multi-agent processing delay
-    setTimeout(() => {
-        const responseText = `I have processed your request: "${message}". How else can I assist you?`;
+    try {
+        let taskType = "research";
+        let payload = { query: message };
+
+        // Simple routing logic based on keywords
+        if (message.toLowerCase().includes("system update") || message.toLowerCase().includes("check for updates")) {
+            taskType = "ops_update";
+            payload = { action: "check" };
+        } else if (message.toLowerCase().includes("apply updates")) {
+            taskType = "ops_update";
+            payload = { action: "apply" };
+        }
+
+        const response = await fetch('/api/task', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ task_type: taskType, payload: payload })
+        });
+
+        const data = await response.json();
+        let responseText = "";
+
+        if (taskType === "research") {
+            responseText = data; // Research agent returns a string or summary
+        } else if (taskType === "ops_update") {
+            responseText = `System Status: ${data.status}. Output: ${data.output.split('\n').pop()}`;
+        }
 
         const assistantMsg = document.createElement('p');
         assistantMsg.innerHTML = `<strong>Assistant:</strong> ${responseText}`;
@@ -73,7 +97,10 @@ function handleResponse(message) {
 
         statusIndicator.innerText = "Ready to help";
         speak(responseText);
-    }, 1000);
+    } catch (error) {
+        console.error("Error communicating with backend:", error);
+        statusIndicator.innerText = "Error connecting to server.";
+    }
 }
 
 sendBtn.addEventListener('click', () => {
