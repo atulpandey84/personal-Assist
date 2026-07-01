@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="assistant-container">
+            <div class="avatar-box">
+                <!-- SVG Avatar with a feminine look -->
+                <svg id="avatar" width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="95" fill="#f8e8e8" stroke="#d4a5a5" stroke-width="2"/>
+                    <!-- Hair -->
+                    <path d="M100 20 C40 20 30 100 30 150 C30 150 50 130 100 130 C150 130 170 150 170 150 C170 100 160 20 100 20 Z" fill="#4a3728"/>
+                    <!-- Face -->
+                    <circle cx="100" cy="85" r="50" fill="#ffe0bd"/>
+                    <!-- Eyes -->
+                    <circle id="eye-l" cx="80" cy="80" r="5" fill="#333"/>
+                    <circle id="eye-r" cx="120" cy="80" r="5" fill="#333"/>
+                    <!-- Mouth -->
+                    <path id="mouth" d="M85 105 Q100 115 115 105" fill="none" stroke="#e75480" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="status-indicator" id="status">Ready to help</div>
+            <div class="chat-display" id="chat">
+                <p>Welcome. I am your Multi-Agent Assistant. You can speak to me or type below.</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="input-box" placeholder="Type your message here...">
+            <button id="send-btn">Send</button>
+            <button id="mic-btn" class="mic-inactive">🎙️ Listen</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
