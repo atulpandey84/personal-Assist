@@ -25,12 +25,27 @@ class PlannerAgent(Agent):
 
     def decompose(self, goal):
         print(f"[{self.name}] Decomposing goal: {goal}")
-        # Logic to return list of tasks
         if not goal:
             return []
-        if "update" in goal.lower():
-            return [{"agent": "ops", "task": "system_check"}, {"agent": "ops", "task": "apply_update"}]
-        return [{"agent": "researcher", "task": "web_search", "query": goal}]
+
+        goal_lower = goal.lower()
+        tasks = []
+
+        # Intent Recognition & Task Mapping
+        if any(kw in goal_lower for kw in ["update", "upgrade", "apt"]):
+            tasks.append({"agent": "ops", "task": "system_update", "action": "apply" if "apply" in goal_lower else "check"})
+
+        if any(kw in goal_lower for kw in ["cpu", "ram", "memory", "disk", "telemetry", "status", "health"]):
+            tasks.append({"agent": "telemetry", "task": "get_status"})
+
+        if any(kw in goal_lower for kw in ["search", "what is", "who is", "research", "find"]):
+            tasks.append({"agent": "researcher", "task": "web_search", "query": goal})
+
+        # Default to research if no specific intent found
+        if not tasks:
+            tasks.append({"agent": "researcher", "task": "web_search", "query": goal})
+
+        return tasks
 
 class Orchestrator:
     def __init__(self):
@@ -40,8 +55,9 @@ class Orchestrator:
         self.operator = ComputerOperator()
         self.security = SecurityAgent()
 
-    def handle_task(self, task_type, payload):
-        goal = payload.get("query") or payload.get("goal")
+    def process(self, message):
+        """Unified entry point for all queries."""
+        goal = message
 
         # 1. Planning Phase
         plan = self.planner.decompose(goal)
@@ -56,7 +72,7 @@ class Orchestrator:
             elif agent_type == "ops":
                 # Security Audit before execution
                 audit = self.security.audit_script("scripts/update_manager.sh")
-                res = self.run_ops_update(payload.get("action", "check"))
+                res = self.run_ops_update(step.get("action", "check"))
                 results.append({"agent": "ops", "output": res, "security_audit": audit})
             elif agent_type == "telemetry":
                 res = self.operator.get_system_telemetry()

@@ -63,22 +63,10 @@ async function handleResponse(message) {
     statusIndicator.innerText = "Thinking...";
 
     try {
-        let taskType = "research";
-        let payload = { query: message };
-
-        // Simple routing logic based on keywords
-        if (message.toLowerCase().includes("system update") || message.toLowerCase().includes("check for updates")) {
-            taskType = "ops_update";
-            payload = { action: "check", goal: message };
-        } else if (message.toLowerCase().includes("apply updates")) {
-            taskType = "ops_update";
-            payload = { action: "apply", goal: message };
-        }
-
-        const response = await fetch('/api/task', {
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ task_type: taskType, payload: payload })
+            body: JSON.stringify({ message: message })
         });
 
         const data = await response.json();

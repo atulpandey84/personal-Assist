@@ -15,13 +15,12 @@ def index():
 def static_files(path):
     return send_from_directory(app.static_folder, path)
 
-@app.route('/api/task', methods=['POST'])
-def handle_task():
+@app.route('/api/chat', methods=['POST'])
+def chat():
     data = request.json
-    task_type = data.get('task_type')
-    payload = data.get('payload', {})
+    message = data.get('message', '')
 
-    result = orchestrator.handle_task(task_type, payload)
+    result = orchestrator.process(message)
     return jsonify(result)
 
 @app.route('/api/status', methods=['GET'])
