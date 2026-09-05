@@ -4,16 +4,33 @@ const inputBox = document.getElementById('input-box');
 const sendBtn = document.getElementById('send-btn');
 const micBtn = document.getElementById('mic-btn');
 
-// --- Text to Speech (Talking) ---
+// --- Text to Speech with 3D Viseme Lip-Syncing ---
 function speak(text) {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.pitch = 1.2; // Slightly higher pitch for feminine tone
+    utterance.pitch = 1.2; // Feminine tone
     utterance.rate = 1.0;
 
-    // Animate mouth while speaking
-    const mouth = document.getElementById('mouth');
-    utterance.onstart = () => mouth.setAttribute('d', 'M80 110 Q100 130 120 110');
-    utterance.onend = () => mouth.setAttribute('d', 'M85 105 Q100 115 115 105');
+    // Map audio speech playback to 3D Persona Visemes
+    const visemeList = ['aa', 'oh', 'ee', 'ih', 'ou'];
+    let visemeInterval = null;
+
+    utterance.onstart = () => {
+        if (window.persona3D) {
+            window.persona3D.setState('speaking');
+            visemeInterval = setInterval(() => {
+                const randomViseme = visemeList[Math.floor(Math.random() * visemeList.length)];
+                window.persona3D.setViseme(randomViseme, Math.random() * 0.8 + 0.2);
+            }, 120);
+        }
+    };
+
+    utterance.onend = () => {
+        if (visemeInterval) clearInterval(visemeInterval);
+        if (window.persona3D) {
+            window.persona3D.setViseme('aa', 0);
+            window.persona3D.setState('ready');
+        }
+    };
 
     window.speechSynthesis.speak(utterance);
 }
@@ -29,6 +46,9 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     recognition.onstart = () => {
         statusIndicator.innerText = "I'm listening...";
         micBtn.classList.add('mic-active');
+        if (window.persona3D) {
+            window.persona3D.setState('listening');
+        }
     };
 
     recognition.onresult = (event) => {
@@ -61,6 +81,9 @@ async function handleResponse(message) {
     chatDisplay.scrollTop = chatDisplay.scrollHeight;
 
     statusIndicator.innerText = "Thinking...";
+    if (window.persona3D) {
+        window.persona3D.setState('thinking');
+    }
 
     try {
         const response = await fetch('/api/chat', {
