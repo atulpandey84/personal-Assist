@@ -137,11 +137,11 @@ class Persona3DManager {
         eyeGroupLeft.add(leftSclera);
         eyeGroupRight.add(rightSclera);
 
-        // Vibrant Blue Irises
+        // Warm Hazel/Brown Irises (Donna Paulsen style)
         const irisGeo = new THREE.CircleGeometry(0.060, 32);
         const irisMat = new THREE.MeshStandardMaterial({
-            color: 0x1b6fe3,
-            roughness: 0.1,
+            color: 0x5c3317,
+            roughness: 0.15,
             metalness: 0.1
         });
 
@@ -198,9 +198,9 @@ class Persona3DManager {
         this.leftEye = eyeGroupLeft;
         this.rightEye = eyeGroupRight;
 
-        // 3. Eyebrows
+        // 3. Eyebrows (Warm Auburn Tint)
         const browGeo = new THREE.BoxGeometry(0.16, 0.018, 0.01);
-        const browMat = new THREE.MeshBasicMaterial({ color: 0x4a3222 });
+        const browMat = new THREE.MeshBasicMaterial({ color: 0x7a3e20 });
 
         this.leftBrow = new THREE.Mesh(browGeo, browMat);
         this.leftBrow.position.set(-0.21, 0.25, 0.58);
@@ -229,12 +229,12 @@ class Persona3DManager {
         rightBlush.rotation.y = 0.22;
         this.headGroup.add(rightBlush);
 
-        // 5. Stylized Female Hair (Layered Back Volume + Side Locks + Sleek Forehead Bangs)
+        // 5. Iconic Reddish Copper/Auburn Hair (Donna Paulsen style)
         this.hairGroup = new THREE.Group();
         const hairMat = new THREE.MeshStandardMaterial({
-            color: 0x543b2b,
-            roughness: 0.45,
-            metalness: 0.05
+            color: 0xc85a2b,
+            roughness: 0.40,
+            metalness: 0.08
         });
 
         // Top Hair Volume
@@ -270,11 +270,11 @@ class Persona3DManager {
 
         this.headGroup.add(this.hairGroup);
 
-        // 6. Lip & Mouth Assembly
+        // 6. Lip & Mouth Assembly (Sophisticated Berry/Coral Red)
         const mouthGroup = new THREE.Group();
         const lipMat = new THREE.MeshStandardMaterial({
-            color: 0xe6556e,
-            roughness: 0.25,
+            color: 0xc83246,
+            roughness: 0.22,
             metalness: 0.05
         });
 
@@ -299,23 +299,23 @@ class Persona3DManager {
         mouthGroup.position.set(0, -0.22, 0.58);
         this.headGroup.add(mouthGroup);
 
-        // 7. Torso & Stylish Dark Outer Jacket
+        // 7. Torso & Tailored Executive Sheath Dress (Donna Paulsen style)
         const torsoGroup = new THREE.Group();
 
-        // Inner Top
-        const innerGeo = new THREE.CylinderGeometry(0.34, 0.48, 0.7, 24);
-        const innerMat = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.5 });
-        const innerTop = new THREE.Mesh(innerGeo, innerMat);
-        innerTop.position.set(0, -0.95, 0);
-        torsoGroup.add(innerTop);
+        // Elegantly Tailored Sheath Dress
+        const dressGeo = new THREE.CylinderGeometry(0.38, 0.52, 0.82, 32);
+        const dressMat = new THREE.MeshStandardMaterial({ color: 0x800020, roughness: 0.35, metalness: 0.05 }); // Deep Burgundy
+        const dressMesh = new THREE.Mesh(dressGeo, dressMat);
+        dressMesh.position.set(0, -0.96, 0);
+        torsoGroup.add(dressMesh);
 
-        // Outer Jacket
-        const jacketGeo = new THREE.CylinderGeometry(0.44, 0.62, 0.75, 24, 1, true, 0, Math.PI * 1.6);
-        const jacketMat = new THREE.MeshStandardMaterial({ color: 0x22252a, roughness: 0.4 });
-        const jacketMesh = new THREE.Mesh(jacketGeo, jacketMat);
-        jacketMesh.position.set(0, -0.98, 0);
-        jacketMesh.rotation.y = Math.PI * 0.2;
-        torsoGroup.add(jacketMesh);
+        // High Neckline Accent
+        const collarGeo = new THREE.TorusGeometry(0.32, 0.025, 16, 32);
+        const collarMat = new THREE.MeshStandardMaterial({ color: 0x5a0016, roughness: 0.3 });
+        const collarMesh = new THREE.Mesh(collarGeo, collarMat);
+        collarMesh.position.set(0, -0.58, 0);
+        collarMesh.rotation.x = Math.PI / 2;
+        torsoGroup.add(collarMesh);
 
         this.torsoMesh = torsoGroup;
         this.scene.add(this.torsoMesh);
