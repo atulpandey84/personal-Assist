@@ -41,4 +41,4 @@ Instead of immediate answers, the system follows a collaborative "Architecture R
 - **Orchestration:** Micro-kernel style orchestrator with plugin support for new agents.
 - **Memory System:** Vector-based long-term storage and knowledge graphs.
 - **Tooling:** Integrated support for MCP (Model Context Protocol), local CLI execution, and web automation.
-- **UI:** Interactive, voice-enabled interface with transparency into agent "debates".
+- **UI:** Interactive, voice-enabled interface with transparency into agent "debates" (with roadmap for 3D female persona conversion detailed in `FEASIBILITY_STUDY_3D_FEMALE_PERSONA.md`).
