@@ -4,27 +4,63 @@ const inputBox = document.getElementById('input-box');
 const sendBtn = document.getElementById('send-btn');
 const micBtn = document.getElementById('mic-btn');
 
-// --- Text to Speech with 3D Viseme Lip-Syncing ---
+// --- Text to Speech with Phoneme-Mapped 3D Viseme Lip-Syncing ---
 function speak(text) {
+    if (!('speechSynthesis' in window)) return;
+
+    // Cancel existing speech
+    window.speechSynthesis.cancel();
+
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.pitch = 1.2; // Feminine tone
+    utterance.pitch = 1.25; // Warm, natural feminine pitch
     utterance.rate = 1.0;
 
-    // Map audio speech playback to 3D Persona Visemes
-    const visemeList = ['aa', 'oh', 'ee', 'ih', 'ou'];
+    // Advanced phoneme to viseme mapping table
+    const phonemeMap = {
+        'a': 'aa', 'e': 'ee', 'i': 'ih', 'o': 'oh', 'u': 'ou',
+        'y': 'ee', 'w': 'ou', 'm': 'ou', 'b': 'ou', 'p': 'ou',
+        'f': 'ih', 'v': 'ih', 's': 'ih', 'z': 'ih', 'r': 'oh'
+    };
+
+    let words = text.toLowerCase().split(/\s+/);
+    let wordIndex = 0;
+    let charIndex = 0;
     let visemeInterval = null;
 
     utterance.onstart = () => {
         if (window.persona3D) {
             window.persona3D.setState('speaking');
+
             visemeInterval = setInterval(() => {
-                const randomViseme = visemeList[Math.floor(Math.random() * visemeList.length)];
-                window.persona3D.setViseme(randomViseme, Math.random() * 0.8 + 0.2);
-            }, 120);
+                if (wordIndex < words.length) {
+                    const currentWord = words[wordIndex];
+                    const char = currentWord[charIndex] || 'a';
+                    const targetViseme = phonemeMap[char] || 'aa';
+                    const intensity = 0.4 + Math.random() * 0.5;
+
+                    window.persona3D.setViseme(targetViseme, intensity);
+
+                    charIndex++;
+                    if (charIndex >= currentWord.length) {
+                        charIndex = 0;
+                        wordIndex++;
+                    }
+                } else {
+                    window.persona3D.setViseme('aa', 0.1);
+                }
+            }, 90);
         }
     };
 
     utterance.onend = () => {
+        if (visemeInterval) clearInterval(visemeInterval);
+        if (window.persona3D) {
+            window.persona3D.setViseme('aa', 0);
+            window.persona3D.setState('ready');
+        }
+    };
+
+    utterance.onerror = () => {
         if (visemeInterval) clearInterval(visemeInterval);
         if (window.persona3D) {
             window.persona3D.setViseme('aa', 0);
@@ -71,7 +107,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     };
 }
 
-// --- Interaction Logic ---
+// --- Interaction Logic & Multi-Agent State Mapping ---
 async function handleResponse(message) {
     if (!message) return;
 
@@ -93,7 +129,7 @@ async function handleResponse(message) {
         });
 
         const data = await response.json();
-        let responseText = data.final_report || "Task completed.";
+        let responseText = data.final_report || "Task completed successfully.";
 
         // Display Multi-Agent Discussion/Debate
         const debateBox = document.createElement('div');
@@ -101,7 +137,7 @@ async function handleResponse(message) {
         debateBox.innerHTML = "<strong>Multi-Agent Discussion:</strong><br>";
 
         if (data.plan) {
-            debateBox.innerHTML += `<small><i>Planner: Decomposed into ${data.plan.length} steps.</i></small><br>`;
+            debateBox.innerHTML += `<small><i>Planner: Decomposed goal into ${data.plan.length} agent tasks.</i></small><br>`;
         }
 
         data.results.forEach(res => {
@@ -109,7 +145,7 @@ async function handleResponse(message) {
             if (res.agent === 'ops' && res.security_audit) {
                 detail = ` | Security: ${res.security_audit[0]}`;
             }
-            debateBox.innerHTML += `<small><i>${res.agent}: Processed successfully.${detail}</i></small><br>`;
+            debateBox.innerHTML += `<small><i>${res.agent.toUpperCase()}: Processed execution task.${detail}</i></small><br>`;
         });
 
         chatDisplay.appendChild(debateBox);
@@ -124,6 +160,9 @@ async function handleResponse(message) {
     } catch (error) {
         console.error("Error communicating with backend:", error);
         statusIndicator.innerText = "Error connecting to server.";
+        if (window.persona3D) {
+            window.persona3D.setState('ready');
+        }
     }
 }
 
