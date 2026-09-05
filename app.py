@@ -27,7 +27,11 @@ def chat():
 def get_status():
     return jsonify({
         "status": "online",
-        "agents": ["Architect", "Researcher", "Developer", "Ops"]
+        "agents": [
+            "Executive", "Planner", "Architect", "Software Engineer",
+            "Researcher", "Security", "Ops", "QA Reviewer",
+            "Documentation", "Communication", "Memory"
+        ]
     })
 
 if __name__ == '__main__':

@@ -17,7 +17,8 @@ Welcome to the Multi-Agent Framework repository. This system is designed as a mo
 
 ## 📂 Project Structure
 
-- `docs/`: Documentation and architecture specifications.
+- `docs/`: Documentation, architecture specifications, and feasibility studies.
+  - `docs/FEASIBILITY_STUDY_3D_FEMALE_PERSONA.md`: Feasibility study for converting the assistant into a real 3D female persona.
 - `scripts/`: System-level automation scripts.
 - `qa_engine/`: Research and synthesis logic.
 - `ui/`: Frontend interface files (Web UI).
