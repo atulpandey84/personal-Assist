@@ -42,21 +42,22 @@ class PlannerAgent(Agent):
         goal_lower = goal.lower()
         tasks = []
 
-        # Engaging multiple specialized agents across categories
-        tasks.append({"agent": "architect", "task": "design_solution", "goal": goal})
-        tasks.append({"agent": "researcher", "task": "web_search", "query": goal})
-        tasks.append({"agent": "engineer", "task": "code_analysis", "goal": goal})
-        tasks.append({"agent": "security", "task": "threat_audit", "goal": goal})
-
+        # Intent recognition and intelligent routing
         if any(kw in goal_lower for kw in ["update", "upgrade", "apt", "system"]):
             tasks.append({"agent": "ops", "task": "system_update", "action": "apply" if "apply" in goal_lower else "check"})
-
-        if any(kw in goal_lower for kw in ["cpu", "ram", "memory", "disk", "telemetry", "status", "health"]):
+            tasks.append({"agent": "security", "task": "threat_audit", "goal": goal})
+        elif any(kw in goal_lower for kw in ["cpu", "ram", "memory", "disk", "telemetry", "status", "health"]):
             tasks.append({"agent": "telemetry", "task": "get_status"})
-
-        tasks.append({"agent": "qa", "task": "review_and_verify", "goal": goal})
-        tasks.append({"agent": "doc", "task": "generate_docs", "goal": goal})
-        tasks.append({"agent": "communicator", "task": "tailor_presentation", "goal": goal})
+        elif any(kw in goal_lower for kw in ["3d", "vrm", "persona", "avatar", "architecture", "design", "feasibility", "study"]):
+            tasks.append({"agent": "architect", "task": "design_solution", "goal": goal})
+            tasks.append({"agent": "engineer", "task": "code_analysis", "goal": goal})
+            tasks.append({"agent": "doc", "task": "generate_docs", "goal": goal})
+        elif any(kw in goal_lower for kw in ["search", "find", "research", "what", "who", "where", "how"]):
+            tasks.append({"agent": "researcher", "task": "web_search", "query": goal})
+            tasks.append({"agent": "communicator", "task": "tailor_presentation", "goal": goal})
+        else:
+            # Default conversational or general query routing
+            tasks.append({"agent": "communicator", "task": "tailor_presentation", "goal": goal})
 
         return tasks
 
@@ -117,13 +118,13 @@ class Orchestrator:
         self.memory = MemoryAgent()
 
     def process(self, message):
-        """Unified entry point engaging all specialized agents across the multi-agent operating system."""
+        """Unified entry point engaging specialized agents based on intent."""
         goal = message
 
         # 1. Planning Phase
         plan = self.planner.decompose(goal)
 
-        # 2. Execution Phase across all specialized agents
+        # 2. Execution Phase across specialized agents
         results = []
         for step in plan:
             agent_type = step["agent"]
